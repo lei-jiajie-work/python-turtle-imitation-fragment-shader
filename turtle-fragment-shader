@@ -38,7 +38,7 @@ class Vec3:
 
 # 160, 90 is best compromise between render-speed and quality
 # 48, 27 isn't bad
-SCREEN_SIZE = Vec2(48, 27)
+SCREEN_SIZE = Vec2(80, 45)
 WINDOW_SIZE = Vec2(1920, 1080)
 PI = 3.14159
 TAU = 6.28318
@@ -50,18 +50,12 @@ colormode(1.0)
 tracer(0, 0)
 setworldcoordinates(0, SCREEN_SIZE.y, SCREEN_SIZE.x, 0)
 pen.screen.title("Imitation Fragment Shader")
-# Might be able to do pixels by changing turtle shape to rectangle
-# resizing the turtle
-# and using stamp
-#pen.shape("square")
-pen.hideturtle()
+pen.shape("square")
+pen.shapetransform(WINDOW_SIZE.x / SCREEN_SIZE.x / 5.0, 0.0, 0.0, WINDOW_SIZE.y / SCREEN_SIZE.y / 5.0)
 
 frame = 0
 frame_dilation = 4.0
 
-# Initially expected the actions to be done simultaneously; however, it seems that there is an inevitable delay between each dot being "drawn"
-# Then, I planned on having one "turtle" for each dot to simulate the parrallel processing of gpus, but I decided against it due to possible resource costs
-# I will try doing two "turtles", this will hopefully double the "render" speed. I will split the screen horizontally in two 
 # I believe the colors might not be too accurate, because I don't know if the dot is centered on the pen's location or not.
 def frag(frag_coord):
     COLOR = Vec3(0.2, 0.5, 1)
@@ -93,10 +87,11 @@ def draw():
             frag_coord = Vec2(x_pixel, y_pixel)
             COLOR = frag(frag_coord)
             pen.teleport(frag_coord.x, frag_coord.y)
-            pen.dot(WINDOW_SIZE.x / SCREEN_SIZE.x + 3, COLOR.r, COLOR.g, COLOR.b)
+            pen.color(COLOR.r, COLOR.g, COLOR.b)
+            pen.stamp()
 
 while True:
-    pen.clear()
+    pen.clearstamps()
     draw()
     update()
     frame += 1
