@@ -29,19 +29,129 @@ class Vec2:
         height = sin(angle)
         length = cos(angle)
         return Vec2(length, height)
+    
+    def subtract(self, b):
+        self.x -= b.x,
+        self.y -= b.y,
+
+    def subtract_scalar(self, scalar):
+        self.x -= scalar
+        self.y -= scalar
+    
+    def add(self, b):
+        self.x += b.x,
+        self.y += b.y,
+    
+    def add_scalar(self, scalar):
+        self.x += scalar
+        self.y += scalar
+    
+    def abs(self):
+        self.x = math.abs(self.x)
+        self.y = math.abs(self.y)
+
+    @staticmethod
+    def max(a, b):
+        return Vec2(
+            math.max(a.x, b.x),
+            math.max(a.y, b.y),
+        )
+    
+    @staticmethod
+    def min(a, b):
+        return Vec2(
+            math.min(a.x, b.y),
+            math.min(a.x, b.y),
+        )
 
 class Vec3:
+    # I wish I had pointers for x, y, and z
     def __init__(self, r, g, b):
         self.r = float(r)
         self.g = float(g)
         self.b = float(b)
+    
+    def subtract(self, b):
+        self.r -= b.r,
+        self.g -= b.g,
+        self.b -= b.b,
+    
+    def subtract_scalar(self, scalar):
+        self.r -= scalar
+        self.g -= scalar
+        self.b -= scalar
+    
+    def add(self, b):
+        self.r += b.r,
+        self.g += b.g,
+        self.b += b.b,
+    
+    def add_scalar(self, scalar):
+        self.r += scalar
+        self.g += scalar
+        self.b += scalar
+
+    def divide(self, b):
+        self.r /= b.r
+        self.g /= b.g
+        self.b /= b.b
+    
+    def divide_scalar(self, scalar):
+        self.r /= scalar
+        self.g /= scalar
+        self.b /= scalar
+
+    def multiply(self, b):
+        self.r *= b.r
+        self.g *= b.g
+        self.b *= b.b
+    
+    def multiply_scalar(self, scalar):
+        self.r *= scalar
+        self.g *= scalar
+        self.b *= scalar
+    
+    def abs(self):
+        self.r = math.abs(self.r)
+        self.g = math.abs(self.g)
+        self.b = math.abs(self.b)
+    
+    def get_length(self):
+        return math.sqrt(self.r * self.r + self.g * self.g + self.b * self.b)
+    
+    def floor(self):
+        self.r = math.floor(self.r)
+        self.g = math.floor(self.g)
+        self.b = math.floor(self.b)
+    
+    @staticmethod
+    def max(a, b):
+        return Vec3(
+            math.max(a.r, b.r),
+            math.max(a.g, b.g),
+            math.max(a.b, b.b),
+        )
+    
+    @staticmethod
+    def min(a, b):
+        return Vec3(
+            math.min(a.r, b.r),
+            math.min(a.g, b.g),
+            math.min(a.b, b.b),
+        )
 
 # 160, 90 is best compromise between render-speed and quality
 # 48, 27 isn't bad
-SCREEN_SIZE = Vec2(80, 45)
+SCREEN_SIZE = Vec2(160, 90)
 WINDOW_SIZE = Vec2(1920, 1080)
+ZOOM = 0.4
+FRAGMENT_SIZE_MODIFIER = 0.0475
 PI = 3.14159
 TAU = 6.28318
+MARCHES = 80
+MAX_RENDER_DISTANCE = 200.0
+MIN_RENDER_DISTANCE = 0.015625
+PILLAR_SIZE = Vec3(1.0, 13.0, 1.0)
 
 
 pen = Turtle()
@@ -51,10 +161,35 @@ tracer(0, 0)
 setworldcoordinates(0, SCREEN_SIZE.y, SCREEN_SIZE.x, 0)
 pen.screen.title("Imitation Fragment Shader")
 pen.shape("square")
-pen.shapetransform(WINDOW_SIZE.x / SCREEN_SIZE.x / 5.0, 0.0, 0.0, WINDOW_SIZE.y / SCREEN_SIZE.y / 5.0)
+pen.shapetransform(
+    FRAGMENT_SIZE_MODIFIER * WINDOW_SIZE.x / SCREEN_SIZE.x, 
+    0.0, 
+    0.0, 
+    FRAGMENT_SIZE_MODIFIER * WINDOW_SIZE.y / SCREEN_SIZE.y
+)
 
 frame = 0
 frame_dilation = 4.0
+
+def signed_distance_box(p, b):
+    # p and b are Vec3s
+    q = p.abs().subtract(b)
+    u = math.min(math.max(q.r, math.max(q.g, q.b)), 0.0)
+    return Vec3.max(q, Vec3(0, 0, 0)).get_length().add_scalar(u)
+
+def domain_repetition(p, interval):
+    # p is a vector 3, interval is a float
+    
+    id = p.divide(interval / 0.5).floor()
+    r = p.subtract(id.multiply_scalar(interval))
+    
+    rand_size = Vec2(1.0, 1.0).add_scalar(math.sin(id.x * 4.2 - id.y * 9.1))
+    pillars = signed_distance_box(
+        Vec3(r.x, p.y + rand_size.y, r.z),
+        Vec3(PILLAR_SIZE.x, PILLAR_SIZE.y, PILLAR_SIZE.z),
+    )
+    
+    return pillars
 
 # I believe the colors might not be too accurate, because I don't know if the dot is centered on the pen's location or not.
 def frag(frag_coord):
@@ -65,8 +200,8 @@ def frag(frag_coord):
     
     uv.x *= (float(SCREEN_SIZE.x) / float(SCREEN_SIZE.y))
     
-    uv.x += math.cos(frame * PI / frame_dilation) * 0.4
-    uv.y += math.sin(frame * PI / frame_dilation) * 0.4
+    uv.x += math.cos(frame * PI / frame_dilation) * ZOOM
+    uv.y += math.sin(frame * PI / frame_dilation) * ZOOM
     
     inverse_length = 1.0 - min(uv.get_length(), 1.0)
     #inverse_length += 0.2
@@ -82,13 +217,15 @@ def frag(frag_coord):
     return COLOR
 
 def draw():
-    for y_pixel in range(1, int(SCREEN_SIZE.y), 1):
-        for x_pixel in range(1, int(SCREEN_SIZE.x), 1):
+    for y_pixel in range(1, int(SCREEN_SIZE.y)):
+        for x_pixel in range(1, int(SCREEN_SIZE.x)):
             frag_coord = Vec2(x_pixel, y_pixel)
             COLOR = frag(frag_coord)
             pen.teleport(frag_coord.x, frag_coord.y)
             pen.color(COLOR.r, COLOR.g, COLOR.b)
             pen.stamp()
+
+#print(Vec3.__dict__)
 
 while True:
     pen.clearstamps()
