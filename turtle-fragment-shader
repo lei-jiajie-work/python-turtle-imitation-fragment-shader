@@ -26,42 +26,81 @@ class Vec2:
 
     @staticmethod
     def from_angle(angle):
-        height = sin(angle)
-        length = cos(angle)
+        height = math.sin(angle)
+        length = math.cos(angle)
         return Vec2(length, height)
     
     def subtract(self, b):
-        self.x -= b.x,
-        self.y -= b.y,
+        return Vec2(
+            self.x - b.x,
+            self.y - b.y,
+        )
 
     def subtract_scalar(self, scalar):
-        self.x -= scalar
-        self.y -= scalar
+        return Vec2(
+            self.x - float(scalar),
+            self.y - float(scalar),
+        )
     
     def add(self, b):
-        self.x += b.x,
-        self.y += b.y,
+        return Vec2(
+            self.x + b.x,
+            self.y + b.y,
+        )
     
     def add_scalar(self, scalar):
-        self.x += scalar
-        self.y += scalar
+        return Vec2(
+            self.x + float(scalar),
+            self.y + float(scalar),
+        )
     
-    def abs(self):
-        self.x = math.abs(self.x)
-        self.y = math.abs(self.y)
+    def divide(self, b):
+        return Vec2(
+            self.x / b.x,
+            self.y / b.y,
+        )
 
+    def divide_scalar(self, scalar):
+        return Vec2(
+            self.x / scalar,
+            self.y / scalar,
+        )
+
+    def multiply(self, b):
+        return Vec2(
+            self.x * b.x,
+            self.y * b.y,
+        )
+
+    def multiply_scalar(self, scalar):
+        return Vec2(
+            self.x * scalar,
+            self.y * scalar,
+        )
+    
+    def abs(self): 
+        return Vec2(
+            float(abs(self.x)),
+            float(abs(self.y)),
+        )
+    
+    def print(self):
+        print_format = "Vec2({x}, {y})"
+        print(print_format.format(x = self.x, y = self.y))
+        return self
+    
     @staticmethod
     def max(a, b):
         return Vec2(
-            math.max(a.x, b.x),
-            math.max(a.y, b.y),
+            max(a.x, b.x),
+            max(a.y, b.y),
         )
     
     @staticmethod
     def min(a, b):
         return Vec2(
-            math.min(a.x, b.y),
-            math.min(a.x, b.y),
+            min(a.x, b.y),
+            min(a.x, b.y),
         )
 
 class Vec3:
@@ -72,77 +111,109 @@ class Vec3:
         self.b = float(b)
     
     def subtract(self, b):
-        self.r -= b.r,
-        self.g -= b.g,
-        self.b -= b.b,
+        return Vec3(
+            self.r - b.r,
+            self.g - b.g,
+            self.b - b.b,
+        )
     
     def subtract_scalar(self, scalar):
-        self.r -= scalar
-        self.g -= scalar
-        self.b -= scalar
+        return Vec3(
+            self.r - float(scalar),
+            self.g - float(scalar),
+            self.b - float(scalar),
+        )
     
     def add(self, b):
-        self.r += b.r,
-        self.g += b.g,
-        self.b += b.b,
+        return Vec3(
+            self.r + b.r,
+            self.g + b.g,
+            self.b + b.b,
+        )
     
     def add_scalar(self, scalar):
-        self.r += scalar
-        self.g += scalar
-        self.b += scalar
+        return Vec3(
+            self.r + float(scalar),
+            self.g + float(scalar),
+            self.b + float(scalar),
+        )
 
     def divide(self, b):
-        self.r /= b.r
-        self.g /= b.g
-        self.b /= b.b
+        return Vec3(
+            self.r / b.r,
+            self.g / b.g,
+            self.b / b.b,
+        )
     
     def divide_scalar(self, scalar):
-        self.r /= scalar
-        self.g /= scalar
-        self.b /= scalar
+        return Vec3(
+            self.r / float(scalar),
+            self.g / float(scalar),
+            self.b / float(scalar),
+        )
 
     def multiply(self, b):
-        self.r *= b.r
-        self.g *= b.g
-        self.b *= b.b
+        return Vec3(
+            self.r * b.r,
+            self.g * b.g,
+            self.b * b.b,
+        )
     
     def multiply_scalar(self, scalar):
-        self.r *= scalar
-        self.g *= scalar
-        self.b *= scalar
-    
-    def abs(self):
-        self.r = math.abs(self.r)
-        self.g = math.abs(self.g)
-        self.b = math.abs(self.b)
+        return Vec3(
+            self.r * float(scalar),
+            self.g * float(scalar),
+            self.b * float(scalar),
+        )
     
     def get_length(self):
-        return math.sqrt(self.r * self.r + self.g * self.g + self.b * self.b)
+        return float(math.sqrt(self.r * self.r + self.g * self.g + self.b * self.b))
+    
+    def get_normalized(self):
+        return Vec3(
+            self.r / float(self.get_length()),
+            self.g / float(self.get_length()),
+            self.b / float(self.get_length()),
+        )
+    
+    def abs(self):
+        return Vec3(
+            float(abs(self.r)),
+            float(abs(self.g)),
+            float(abs(self.b)),
+        )
     
     def floor(self):
-        self.r = math.floor(self.r)
-        self.g = math.floor(self.g)
-        self.b = math.floor(self.b)
+        return Vec3(
+            float(math.floor(self.r)),
+            float(math.floor(self.g)),
+            float(math.floor(self.b)),
+        )
+    
+    def print(self):
+        print_format = "Vec3({red}, {green}, {blue})"
+        print(print_format.format(red = self.r, green = self.g, blue = self.b))
+        return self
     
     @staticmethod
     def max(a, b):
         return Vec3(
-            math.max(a.r, b.r),
-            math.max(a.g, b.g),
-            math.max(a.b, b.b),
+            max(a.r, b.r),
+            max(a.g, b.g),
+            max(a.b, b.b),
         )
     
     @staticmethod
     def min(a, b):
         return Vec3(
-            math.min(a.r, b.r),
-            math.min(a.g, b.g),
-            math.min(a.b, b.b),
+            min(a.r, b.r),
+            min(a.g, b.g),
+            min(a.b, b.b),
         )
 
 # 160, 90 is best compromise between render-speed and quality
 # 48, 27 isn't bad
-SCREEN_SIZE = Vec2(160, 90)
+SCREEN_SIZE = Vec2(320, 180)
 WINDOW_SIZE = Vec2(1920, 1080)
 ZOOM = 0.4
 FRAGMENT_SIZE_MODIFIER = 0.0475
@@ -153,6 +224,7 @@ MAX_RENDER_DISTANCE = 200.0
 MIN_RENDER_DISTANCE = 0.015625
 PILLAR_SIZE = Vec3(1.0, 13.0, 1.0)
 
+run_simulation = True
 
 pen = Turtle()
 delay(0)
@@ -171,64 +243,74 @@ pen.shapetransform(
 frame = 0
 frame_dilation = 4.0
 
+# p and b are Vec3s
 def signed_distance_box(p, b):
-    # p and b are Vec3s
     q = p.abs().subtract(b)
-    u = math.min(math.max(q.r, math.max(q.g, q.b)), 0.0)
-    return Vec3.max(q, Vec3(0, 0, 0)).get_length().add_scalar(u)
+    return Vec3.max(q, Vec3(0.0, 0.0, 0.0)).get_length() \
+    + min(max(q.r, max(q.g, q.b)), 0.0)
 
+# p is a vector 3, interval is a float
 def domain_repetition(p, interval):
-    # p is a vector 3, interval is a float
-    
-    id = p.divide(interval / 0.5).floor()
+    id = p.divide_scalar(interval + 0.5).floor()
     r = p.subtract(id.multiply_scalar(interval))
-    
-    rand_size = Vec2(1.0, 1.0).add_scalar(math.sin(id.x * 4.2 - id.y * 9.1))
+    rand_size = Vec2(1.0, 1.0).add_scalar(math.sin(id.r * 4.2 - id.g * 9.1))
     pillars = signed_distance_box(
-        Vec3(r.x, p.y + rand_size.y, r.z),
-        Vec3(PILLAR_SIZE.x, PILLAR_SIZE.y, PILLAR_SIZE.z),
+        Vec3(r.r, p.g + rand_size.y, r.b),
+        Vec3(PILLAR_SIZE.r, PILLAR_SIZE.g, PILLAR_SIZE.b),
     )
     
     return pillars
 
-# I believe the colors might not be too accurate, because I don't know if the dot is centered on the pen's location or not.
+# p is a vector 3
+def map(p):
+    pillars = domain_repetition(p.subtract(Vec3(6.0, 1.0, -1.0)), 12.0)
+    ground = -1.0 * (p.g - 2.5)
+    return min(ground, pillars)
+
 def frag(frag_coord):
-    COLOR = Vec3(0.2, 0.5, 1)
-    uv = Vec2(float(frag_coord.x) / SCREEN_SIZE.x, float(frag_coord.y) / SCREEN_SIZE.y)
-    
+    uv = frag_coord.divide(SCREEN_SIZE)
     uv = Vec2(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0)
+    uv = uv.multiply_scalar(2.0).subtract_scalar(1.0)
+    uv.x = uv.x * (float(SCREEN_SIZE.x) / float(SCREEN_SIZE.y))
     
-    uv.x *= (float(SCREEN_SIZE.x) / float(SCREEN_SIZE.y))
+    ray_origin = Vec3(0.0, 0.0, -3.0)
+    ray_direction = Vec3(uv.x, uv.y, 1.0).get_normalized()
+    travel = 0.0
+    tint = Vec3(0.3, 0.5, 0.3)
+    color = Vec3(0.0, 0.0, 1.0)
+
+    for i in range(MARCHES):
+        position = ray_origin.add(ray_direction.multiply_scalar(travel))
+        
+        distance = float(map(position))
+        
+        travel += distance
+                
+        if (distance < MIN_RENDER_DISTANCE) or (distance > MAX_RENDER_DISTANCE):
+            break
+
+    travel /= 80.0
     
-    uv.x += math.cos(frame * PI / frame_dilation) * ZOOM
-    uv.y += math.sin(frame * PI / frame_dilation) * ZOOM
-    
-    inverse_length = 1.0 - min(uv.get_length(), 1.0)
-    #inverse_length += 0.2
-    inverse_length *= inverse_length
-    #inverse_length *= (float(math.sin(frame * PI / frame_dilation)) + 1.0) / 2.0
-    
-    COLOR = Vec3(
-        clamp(COLOR.r * inverse_length, 0.0, 1.0), 
-        clamp(COLOR.g * inverse_length, 0.0, 1.0), 
-        clamp(COLOR.b * inverse_length, 0.0, 1.0),
-    )
-    
-    return COLOR
+    color = Vec3(travel, travel, travel)
+    color = color.multiply(tint)
+    color = Vec3.min(Vec3.max(color, Vec3(0.0, 0.0, 0.0)), Vec3(1.0, 1.0, 1.0))
+        
+    return color
 
 def draw():
     for y_pixel in range(1, int(SCREEN_SIZE.y)):
         for x_pixel in range(1, int(SCREEN_SIZE.x)):
-            frag_coord = Vec2(x_pixel, y_pixel)
+            frag_coord = Vec2(float(x_pixel), float(y_pixel))
             COLOR = frag(frag_coord)
             pen.teleport(frag_coord.x, frag_coord.y)
             pen.color(COLOR.r, COLOR.g, COLOR.b)
             pen.stamp()
 
-#print(Vec3.__dict__)
-
-while True:
+while run_simulation:
     pen.clearstamps()
     draw()
     update()
     frame += 1
+
+a = Vec3(8.0, 9.0, 1.0)
+b = Vec3(0.1, 3.0, 1.5)
