@@ -2,11 +2,8 @@
 from turtle import *
 import math
 
-def saw_wave(x):
-    return math.fmod(x, 1.0)
-
-def clamp(a, b, c):
-    return min(max(a, b), c)
+# https://iquilezles.org/articles/sdfrepetition/
+# https://michaelwalczyk.com/blog-ray-marching.html
 
 class Vec2:
     def __init__(self, x, y):
@@ -15,20 +12,11 @@ class Vec2:
 
     def get_length(self):
         return math.sqrt(self.x * self.x + self.y * self.y)
-
-    def get_angle(self):
-        return math.atan(self.y / self.x)
-
+    
     def get_normalized(self):
         normalized_x = self.x / self.get_length()
         normalized_y = self.y / self.get_length()
         return Vec2(normalized_x, normalized_y)
-
-    @staticmethod
-    def from_angle(angle):
-        height = math.sin(angle)
-        length = math.cos(angle)
-        return Vec2(length, height)
     
     def subtract(self, b):
         return Vec2(
@@ -83,11 +71,6 @@ class Vec2:
             float(abs(self.x)),
             float(abs(self.y)),
         )
-    
-    def print(self):
-        print_format = "Vec2({x}, {y})"
-        print(print_format.format(x = self.x, y = self.y))
-        return self
     
     @staticmethod
     def max(a, b):
@@ -190,11 +173,6 @@ class Vec3:
             float(math.floor(self.b)),
         )
     
-    def print(self):
-        print_format = "Vec3({red}, {green}, {blue})"
-        print(print_format.format(red = self.r, green = self.g, blue = self.b))
-        return self
-    
     @staticmethod
     def max(a, b):
         return Vec3(
@@ -213,7 +191,7 @@ class Vec3:
 
 # 160, 90 is best compromise between render-speed and quality
 # 48, 27 isn't bad
-SCREEN_SIZE = Vec2(320, 180)
+SCREEN_SIZE = Vec2(240, 135)
 WINDOW_SIZE = Vec2(1920, 1080)
 ZOOM = 0.4
 FRAGMENT_SIZE_MODIFIER = 0.0475
@@ -251,7 +229,7 @@ def signed_distance_box(p, b):
 
 # p is a vector 3, interval is a float
 def domain_repetition(p, interval):
-    id = p.divide_scalar(interval + 0.5).floor()
+    id = p.divide_scalar(interval).add_scalar(0.5).floor()
     r = p.subtract(id.multiply_scalar(interval))
     rand_size = Vec2(1.0, 1.0).add_scalar(math.sin(id.r * 4.2 - id.g * 9.1))
     pillars = signed_distance_box(
@@ -269,7 +247,7 @@ def map(p):
 
 def frag(frag_coord):
     uv = frag_coord.divide(SCREEN_SIZE)
-    uv = Vec2(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0)
+    #uv = Vec2(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0)
     uv = uv.multiply_scalar(2.0).subtract_scalar(1.0)
     uv.x = uv.x * (float(SCREEN_SIZE.x) / float(SCREEN_SIZE.y))
     
@@ -311,6 +289,3 @@ while run_simulation:
     draw()
     update()
     frame += 1
-
-a = Vec3(8.0, 9.0, 1.0)
-b = Vec3(0.1, 3.0, 1.5)
